@@ -15,10 +15,16 @@ Technical Choices
 * Location is curated and stored in a local file based database.  Currently only BART is supported.
 * Service response is kept as denormaized for simplicty and time constraints.
 
-Design Overview
----------------
+Key Python Files
+----------------
 * services/application.py - is the main service logics, which builds a smart cache to reduce unnecessary hits to the underlying traffic information service.
 * services/views.py - defines RESTful operations.
 * services/serializers.py - defines serializers that transforms data model to REST response or vice versa.
 * services/models.py - defines Location data model and DepartureTime data model
 * services/tests.py - contains test classes
+
+Service Use Case
+----------------
+* Service takes user's location as input and returns the departure time for the transportations that nears user
+
+[Sample Service Call](https://still-beyond-8245.herokuapp.com/departuretime/?u1=37.757&u2=-122.41234)
