@@ -2,10 +2,35 @@ import requests
 import xml.etree.ElementTree as ET
 from services.models import DepartureTime
 from services.models import Location
+from django.core.cache import cache
+import datetime
 
 locationCache = {}
 
 def getDepartureTime(stopCode):
+	now = datetime.datetime.now()
+
+	# Step 1
+	# try to get departure time from cache
+	if stopCode in cache:
+		cachedResult = cache.get(stopCode)
+
+		newResult = []
+		for dt in cachedResult:
+			nextDepartureTime = dt.nextDepartureTime - (now - dt.created).seconds / 60
+			if nextDepartureTime <= 0 :
+				break
+			newdt = DepartureTime(agencyName=dt.agencyName, routeName=dt.routeName, stopName=dt.stopName, stopCode=dt.stopCode, nextDepartureTime=nextDepartureTime)
+			newdt.latitude = dt.latitude
+			newdt.longitude = dt.longitude
+			newResult.append(newdt)
+
+		if (len(newResult) == len(cachedResult)):
+			return newResult
+
+	#
+	# Cache miss, and make a service call to get the departure time
+	#
 	r = requests.get('http://services.my511.org/Transit2.0/GetNextDeparturesByStopCode.aspx?token=8c1a4416-8748-493a-8da4-e632c6c41647&stopcode=' + str(stopCode))
 	if r.status_code != 200:
 		return []
@@ -16,6 +41,7 @@ def getDepartureTime(stopCode):
 	if len(tree) <= 0 or len(tree[0]) <= 0:
 		return result
 
+	minTime = 600
 	for agency in tree[0]:
 		# currently we only support BART
 		agencyName = agency.attrib['Name']
@@ -30,7 +56,9 @@ def getDepartureTime(stopCode):
 					stopName = route[0][0].attrib['name']
 					stopCode = route[0][0].attrib['StopCode']
 					next = int(route[0][0][0][0].text)
-					dt = DepartureTime(agencyName=agencyName, routeName=routeName, stopName=stopName, stopCode=stopCode, nextDepartureTime=next)
+					if next * 60 > minTime:
+						nimTime = next * 60
+					dt = DepartureTime(created=now, agencyName=agencyName, routeName=routeName, stopName=stopName, stopCode=stopCode, nextDepartureTime=next)
 					loc = getLocation(int(stopCode))
 
 					# add if only we have a valid location associated
@@ -38,6 +66,10 @@ def getDepartureTime(stopCode):
 						dt.latitude = loc[0]
 						dt.longitude = loc[1]
 						result.append(dt)
+
+	if stopCode not in cache:
+		if (len(result) > 0):
+			cache.set(stopCode, result, minTime)
 
 	return result
 
