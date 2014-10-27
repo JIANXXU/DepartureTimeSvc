@@ -4,7 +4,7 @@ from rest_framework.urlpatterns import format_suffix_patterns
 from services import views
 
 urlpatterns = patterns('services.views',
-    url(r'^services/$', views.DepartureTimeList.as_view()),
+    url(r'^departuretime/$', views.DepartureTimeList.as_view()),
 )
 
 urlpatterns = format_suffix_patterns(urlpatterns)

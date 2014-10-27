@@ -11,7 +11,10 @@ class DepartureTimeSerializer(serializers.Serializer):
                                   max_length=100)
     stopName = serializers.CharField(required=False,
                                   max_length=100)    
-    stopCode = serializers.IntegerField(required=False)    
+    stopCode = serializers.IntegerField(required=False)
+    nextDepartureTime = serializers.IntegerField(required = False)
+    latitude = serializers.FloatField(required = True)
+    longitude = serializers.FloatField(required = True)
 
     def restore_object(self, attrs, instance=None):
         """
@@ -27,6 +30,9 @@ class DepartureTimeSerializer(serializers.Serializer):
             instance.routeName = attrs.get('routeName', instance.routeName)
             instance.stopName = attrs.get('stopName', instance.stopName)
             instance.stopCode = attrs.get('stopCode', instance.stopCode)
+            instance.nextDepartureTime = attrs.get('nextDepartureTime', instance.nextDepartureTime)
+            instance.latitude = attrs.get('latitude', instance.latitude)
+            instance.longitude = attrs.get('longitude', instance.longitude)
             return instance
 
         # Create new instance

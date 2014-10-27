@@ -19,6 +19,9 @@ class Migration(migrations.Migration):
                 ('routeName', models.CharField(default=b'', max_length=100, blank=True)),
                 ('stopName', models.CharField(default=b'', max_length=100, blank=True)),
                 ('stopCode', models.IntegerField(default=0)),
+                ('nextDepartureTime', models.IntegerField(default=-1)),
+                ('latitude', models.FloatField(null=True, blank=True)),
+                ('longitude', models.FloatField(null=True, blank=True)),
             ],
             options={
                 'ordering': ('created',),
