@@ -9,17 +9,21 @@ locationCache = {}
 
 def getDepartureTime(queryParams):
 	# user's location is in queryParams
-    if 'u1' in queryParams:
-        print (queryParams['u1'])
-    if 'u2' in queryParams:
-        print (queryParams['u2'])
+    #if 'u1' in queryParams:
+    #    print (queryParams['u1'])
+    #if 'u2' in queryParams:
+    #    print (queryParams['u2'])
 
     # here we hard coded stop code 10 and 12
-    result = getDepartureTimeByStopCode(10)
-    result.extend(getDepartureTimeByStopCode(12))
-    
+    stopCode = getStopCode(queryParams)
+    result = []
+    for code in stopCode:
+    	result.extend(getDepartureTimeByStopCode(code))
     return result
 
+def getStopCode(queryParams):
+	# Due to time limit, hardcoded to 10 and 12, two bart station in SF
+	return [10, 12]
 
 def getDepartureTimeByStopCode(stopCode):
 	now = datetime.datetime.now()
@@ -39,7 +43,7 @@ def getDepartureTimeByStopCode(stopCode):
 			newdt.longitude = dt.longitude
 			newResult.append(newdt)
 
-		if (len(newResult) == len(cachedResult)):
+		if len(newResult) == len(cachedResult):
 			return newResult
 
 	#
@@ -75,8 +79,7 @@ def getDepartureTimeByStopCode(stopCode):
 					dt = DepartureTime(created=now, agencyName=agencyName, routeName=routeName, stopName=stopName, stopCode=stopCode, nextDepartureTime=next)
 					loc = getLocation(int(stopCode))
 
-					print (stopCode)
-
+					# print (stopCode)
 					# add if only we have a valid location associated
 					if loc[0] != -1 and loc[1] != -1:
 						dt.latitude = loc[0]
