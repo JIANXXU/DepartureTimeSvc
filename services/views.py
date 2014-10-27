@@ -16,12 +16,7 @@ class DepartureTimeList(APIView):
     def get(self, request, format=None):
 
         # hardcoded to getDepartureTime 10
-        if 'u1' in request.QUERY_PARAMS:
-            print (request.QUERY_PARAMS['u1'])
-        if 'u2' in request.QUERY_PARAMS:
-            print (request.QUERY_PARAMS['u2'])
-
-        time = getDepartureTime(10)
+        time = getDepartureTime(request.QUERY_PARAMS)
 
         # time = (DepartureTime(stopCode=12345, stopName="Milbrae"), DepartureTime(stopCode=1234, stopName="Daly City"))
         serializer = DepartureTimeSerializer(time, many=True)

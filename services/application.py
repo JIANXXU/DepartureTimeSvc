@@ -7,7 +7,21 @@ import datetime
 
 locationCache = {}
 
-def getDepartureTime(stopCode):
+def getDepartureTime(queryParams):
+	# user's location is in queryParams
+    if 'u1' in queryParams:
+        print (queryParams['u1'])
+    if 'u2' in queryParams:
+        print (queryParams['u2'])
+
+    # here we hard coded stop code 10 and 12
+    result = getDepartureTimeByStopCode(10)
+    result.extend(getDepartureTimeByStopCode(12))
+    
+    return result
+
+
+def getDepartureTimeByStopCode(stopCode):
 	now = datetime.datetime.now()
 
 	# Step 1
@@ -60,6 +74,8 @@ def getDepartureTime(stopCode):
 						nimTime = next * 60
 					dt = DepartureTime(created=now, agencyName=agencyName, routeName=routeName, stopName=stopName, stopCode=stopCode, nextDepartureTime=next)
 					loc = getLocation(int(stopCode))
+
+					print (stopCode)
 
 					# add if only we have a valid location associated
 					if loc[0] != -1 and loc[1] != -1:

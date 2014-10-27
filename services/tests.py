@@ -9,7 +9,7 @@ class testApplication(TestCase):
 		loc = Location(stopCode=12, latitude=37.751992, longitude=-122.418722)
 		loc.save()
 
-		times = getDepartureTime(12)
+		times = getDepartureTime({})
 		self.assertEqual(len(times) > 0, True)
 
 	def testValidGetLocation(self):
